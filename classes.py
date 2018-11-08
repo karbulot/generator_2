@@ -1,6 +1,19 @@
 import generators as g
 import datetime as d
 import random as r
+#import main as m
+
+class Lekarz:
+    def __init__(self, time_1, specj):
+        self.imie = g.generate_first_name()
+        self.nazwisko = g.generate_last_name()
+        self.data_urodzenia = g.generate_date(d.date(1950, 1, 1), d.date(1970, 12, 31))
+        self.data_przyjecia = g.generate_date(time_1 - d.timedelta(days=365), time_1)
+        self.PESEL = g.generate_pesel(self.data_urodzenia)
+        self.specjalizacja = g.generate_specjalizacja() if specj == None else specj
+    def toSQL(self):
+        return 'insert into Lekarze (imie, nazwisko, data_urodzenia, pesel, specjalizacja) values "' + \
+                '","' + self.imie + '","' + self.nazwisko + str(self.data_urodzenia) +'","' + self.pesel + '","' + self.specjalizacja + '"'
 
 
 class Pacjent:
@@ -16,9 +29,10 @@ class Pacjent:
         return 'insert into Pacjenci (imie, nazwisko, data_urodzenia, data_przyjecia, plec, pesel) values "' + \
                self.imie +'","' + self.nazwisko +'","' + str(self.data_urodzenia) + '","' + str(self.data_przyjecia) + '","' + self.plec + '","' + self.pesel + '"'
 
+
 class Wizyta:
     n = 0
-    def __init__(self, pacjent: Pacjent, time_1, time_2):
+    def __init__(self, pacjent: Pacjent, time_1, time_2, lekarze, leki):
         self.id = Wizyta.n
         Wizyta.n+=1
         self.czy_wyleczony = r.randint(0,1)
@@ -30,7 +44,7 @@ class Wizyta:
         self.pacjent: Pacjent = pacjent
         self.data = g.generate_date(pacjent.data_przyjecia, time_2)
         self.reklamacja: Reklamacja = Reklamacja(self) if r.randint(0,5) > 3 else None
-        self.diagnoza: Diagnoza = Diagnoza()
+        self.diagnoza: Diagnoza = Diagnoza(lekarze, leki)
 
 
     def addPacjent(self, pacjent: Pacjent):
@@ -39,68 +53,95 @@ class Wizyta:
     def toSQL(self):
             return 'insert into Wizyty (id, data, czy_sie_stawil, czy_wyleczony, koszt, ocena, pacjent, reklamacja, diagnoza) values "' + str(self.id) + '","' +\
                    str(self.data) + '","' + str(self.czy_sie_stawil) + '","' + str(self.czy_wyleczony) + '","' + str(self.koszt) + '","' + str(self.ocena) + '","' + \
-                str(self.pacjent.pesel) + '","' + str(self.diagnoza.id) + '","' + (str(self.reklamacja.id) if self.reklamacja != None else ' ') + '"'
+                str(self.pacjent.pesel) + '","' + str(self.diagnoza.id) + '","' + ('' if self.reklamacja is None else str(self.reklamacja.id)) + '"'
 
 
 class Reklamacja:
-    n=0
+    n = 0
     def __init__(self, wiz: Wizyta):
-        self.id = Wizyta.n
-        Wizyta.n+=1
+        self.id = Reklamacja.n
+        Reklamacja.n +=1
         self.tresc = g.generate_reklamacja_tresc()
         self.czy_uznano = r.randint(0,1)
         self.wizyta = wiz
-        self.data_reklamacji = g.generate_date(self.wizyta.data,self.wizyta.data)
+        self.data_reklamacji = g.generate_date(self.wizyta.data,self.wizyta.data + d.timedelta(days=5))
 
     def addWizyta(self, wizyta: Wizyta):
         self.wizyta = wizyta
         #self.data_reklamacji = Wizyta
 
     def toSQL(self):
-        return 'insert into Reklamacje (tresc, czy_uznano, wizyta, data_reklamacji) values "' + \
-               str(
-                   self.data) + '","' + self.czy_sie_stawil + '","' + self.czy_wyleczony + '","' + self.koszt + '","' + self.ocena + '","' + \
-               self.pacjent.pesel + '","' + self.diagnoza.id + '","' + self.reklamacja.id + '"'
+        return 'insert into Reklamacje (id, tresc, czy_uznano, wizyta, data_reklamacji) values "' + \
+               str(self.id) + '","' + self.tresc + '","' + str(self.czy_uznano) + '","' + str(self.wizyta.id) + '","' + str(self.data_reklamacji) + '"'
 
 
 class Diagnoza:
     n=0
-    def __init__(self):
+    def __init__(self, lekarze, leki):
         self.id = Diagnoza.n
         Diagnoza.n +=1
+        self.choroba = g.generate_illness()
+        self.lekarz: Lekarz = g.choose_doctor(lekarze, self.choroba)
+        self.lek: Lek = g.choose_lek(leki, self.choroba)
         pass
-
-
-
-
-class Lekarz:
-    def __init__(self):
-        self.imie = g.generate_first_name()
-        self.nazwisko = g.generate_last_name()
-        self.data_urodzenia = g.generate_date(d.date(1950, 1, 1), d.date(1970, 12, 31))
-        self.PESEL = g.generate_pesel(self.data_urodzenia)
-
+    def toSQL(self):
+        return 'insert into Diagnozy (id, choroba, lekarz) values "' + \
+               str(self.id) + '","' + self.choroba + '","' + self.czy_wyleczony + '","' + self.koszt + '","' + self.ocena + '","' + \
+               self.pacjent.pesel + '","' + self.diagnoza.id + '","' + self.reklamacja.id + '"'
 
 
 
 
 
 class Lek:
+    n = 0
     def __init__(self):
-        pass
+        self.id = Lek.n
+        Lek.n+=1
+        self.producent = r.choice(list(open('LekiKoniec.txt')))[:-1]
+        self.nazwa = r.choice(list(open('LekiPoczatek.txt')))[:-1] + self.producent
+        self.producent += "pol"
+        self.producent.capitalize()
+        self.dawkowanie = str(r.randint(1,4)) + " razy dziennie przez " + str(r.randint(2,4)) + " tygodnie "
+        self.choroba = g.generate_illness()
+
+    def toSQL(self):
+        return 'insert into Leki (id, producent, nazwa, dawkowanie) values "' + \
+               str(self.id) + '","' + self.producent + '","' + self.nazwa + '","' + self.dawkowanie + '"'
+
 
 class Skierowanie:
+    n = 0
     def __init__(self):
+        self.id = Skierowanie.n
+        Skierowanie.n +=1
+        self.Tresc = g.generate_skierowanie_tresc()
+    def toSQL(self):
         pass
 
 class Skierowanie_na_zabieg:
+    n = 0
     def __init__(self):
+        self.id = Skierowanie_na_zabieg.n
+        Skierowanie_na_zabieg.n += 1
+        self.liczba_zabiegow = r.randint(1,8)
+        self.Sprzet = g.generate_sprzet_name()
+    def toSQL(self):
         pass
 
 class Sprzet:
+    n = 0
     def __init__(self):
+        self.id = Sprzet.n
+        Sprzet.n += 1
+        self.nazwa = g.generate_sprzet_name()
+    def toSQL(self):
         pass
 
+
 class Zabieg:
-    def __init__(self):
+    def __init__(self, pacjent: Pacjent):
+        self.data_wykonania = g.generate_date()
+        self.rezultat = "ok" if r.randint(0,300) != 5 else "nie powiódł się"
+    def toSQL(self):
         pass
