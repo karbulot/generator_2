@@ -2,7 +2,7 @@ import classes as c
 import datetime as d
 
 
-N_PACJENT = 100
+N_PACJENT = 10
 
 
 T_1 = d.date(2016,1,1)
@@ -42,13 +42,22 @@ Sprzety3 = []
 Skierowanianazabiegi3 = []
 Zabiegi3 = []
 
+print(c.g.generate_pesel(d.date(1945,1,1)))
+
 def first_point_in_time():
     LICZBA_WIZYT = c.r.randint(1,10)
 
     for i in range(N_PACJENT):
         Pacjenci.append(c.Pacjent(T_1, T_2))
     for i in Pacjenci:
-        print(i.fddfgdfsg())
+        print(i.toSQL())
+        for j in range(0,c.r.randint(1,10)):
+            wizyta_temp = c.Wizyta(i,T_1,T_2)
+            Wizyty.append(wizyta_temp)
+            print(wizyta_temp.toSQL())
 
 
 
+
+
+first_point_in_time()
