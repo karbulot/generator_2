@@ -11,20 +11,39 @@ N_SPRZET = 25
 T_1 = d.date(2016,1,1)
 T_2 = d.date(2017,1,1)
 T_3 = d.date(2018,1,1)
+T_4 = d.date(2019,1,1)
 
+class Things:
+    def __init__(self,filename):
+        self.Pacjenci = []
+        self.Wizyty = []
+        self.Reklamacje = []
+        self.Lekarze = []
+        self.Diagnozy = []
+        self.Leki = []
+        self.Skierowania = []
+        self.Sprzety = []
+        self.Skierowanianazabiegi = []
+        self.Zabiegi = []
+        self.filename = filename
+        self.file_object = open(filename, "w")
 
+    def iter(self):
+        return [self.Pacjenci, self.Wizyty, self.Reklamacje, self.Diagnozy, self.Leki, self.Sprzety, self.Skierowanianazabiegi, self.Zabiegi]
 
-Pacjenci = []
-Wizyty = []
-Reklamacje = []
-Lekarze = []
-Diagnozy = []
-Leki = []
-Skierowania = []
-Sprzety = []
-Skierowanianazabiegi = []
-Zabiegi = []
+    def toSQL(self):
+        self.file_object = open(self.filename, "w")
+        for i in self.iter():
+            for element in i:
+                self.file_object.write(element.toSQL())
+                self.file_object.write('\n')
+        self.file_object.close()
 
+things1 = Things("insert1.sql")
+#things2 = Things("insert2.sql")
+#things3 = Things("insert3.sql")
+
+"""
 Pacjenci2 = []
 Wizyty2 = []
 Reklamacje2 = []
@@ -46,7 +65,7 @@ Skierowania3 = []
 Sprzety3 = []
 Skierowanianazabiegi3 = []
 Zabiegi3 = []
-
+"""
 #print(c.g.generate_pesel(d.date(1945,1,1)))
 
 
@@ -56,51 +75,77 @@ def generate_doctors(doctors, n: int):
     for i in range (n):
         doctors.append(c.Lekarz(T_1, None))
 
-def first_point_in_time():
+def first_point_in_time(t: Things):
     #Lekarze:
-    generate_doctors(Lekarze,N_LEKARZ)
+    generate_doctors(t.Lekarze,N_LEKARZ)
 
-    Lekarze.append(c.Lekarz(T_1,"Kardiolog"))
-    Lekarze.append(c.Lekarz(T_1,"Psychiatra"))
-    Lekarze.append(c.Lekarz(T_1,"Laryngolog"))
-    Lekarze.append(c.Lekarz(T_1,"Anestezjolog"))
-    Lekarze.append(c.Lekarz(T_1,"Okulista"))
-    Lekarze.append(c.Lekarz(T_1,"Neurolog"))
-    Lekarze.append(c.Lekarz(T_1,"Onkolog"))
+    t.Lekarze.append(c.Lekarz(T_1,"Kardiolog"))
+    t.Lekarze.append(c.Lekarz(T_1,"Psychiatra"))
+    t.Lekarze.append(c.Lekarz(T_1,"Laryngolog"))
+    t.Lekarze.append(c.Lekarz(T_1,"Anestezjolog"))
+    t.Lekarze.append(c.Lekarz(T_1,"Okulista"))
+    t.Lekarze.append(c.Lekarz(T_1,"Neurolog"))
+    t.Lekarze.append(c.Lekarz(T_1,"Onkolog"))
 
     #leki, sprzęty
     for i in range(N_LEK):
-        Leki.append(c.Lek())
+        t.Leki.append(c.Lek())
     for i in range(N_SPRZET):
-        Sprzety.append(c.Sprzet())
+        t.Sprzety.append(c.Sprzet())
 
     # Pacjenci, Wizyty, Reklamacje, Diagnozy, Skierowania, Skierowania na Zabieg, Zabiegi
     for i in range(N_PACJENT):
-        Pacjenci.append(c.Pacjent(T_1, T_2))
-    for i in Pacjenci:
-        print(i.toSQL())
+        t.Pacjenci.append(c.Pacjent(T_1, T_2))
+    for i in t.Pacjenci:
+        #print(i.toSQL())
         for j in range(0,c.r.randint(1,10)):
-            wizyta_temp = c.Wizyta(i,T_1,T_2, Lekarze, Leki)
-            Wizyty.append(wizyta_temp)
-            print(wizyta_temp.toSQL())
-        for wiz in Wizyty:
-            if wiz.reklamacja is not None:
-                Reklamacje.append(wiz.reklamacja)
-            Diagnozy.append(wiz.diagnoza)
+            wizyta_temp = c.Wizyta(i,T_1,T_2, t.Lekarze, t.Leki)
+            t.Wizyty.append(wizyta_temp)
+            #print(wizyta_temp.toSQL())
+    for wiz in t.Wizyty:
+        if wiz.reklamacja is not None:
+            t.Reklamacje.append(wiz.reklamacja)
+        t.Diagnozy.append(wiz.diagnoza)
 
-        for diag in Diagnozy:
-            if diag.skierowanie is not None:
-                Skierowania.append(diag.skierowanie)
+    for diag in t.Diagnozy:
+        if diag.skierowanie is not None:
+           t.Skierowania.append(diag.skierowanie)
 
-        for skier in Skierowania:
-            for zab in skier.zabiegi:
-                Skierowanianazabiegi.append(zab)
-                for zabb in zab.zabiegi:
-                    Zabiegi.append(zabb)
-
-
+    for skier in t.Skierowania:
+        for zab in skier.zabiegi:
+            t.Skierowanianazabiegi.append(zab)
+            for zabb in zab.zabiegi:
+                t.Zabiegi.append(zabb)
 
 
+#things2 = things1
+
+
+def next_point_in_time(t: Things,t_1,t_2,n_new_doctors, n_new_patients, n_patients_left):
+    c.r.shuffle(t.Pacjenci)
+    t.Pacjenci = t.Pacjenci[n_patients_left:]
+    generate_doctors(t.Lekarze, n_new_doctors)
+    for i in range(n_new_patients):
+        t.Pacjenci.append(c.Pacjent(t_1, t_2))
+    for i in t.Pacjenci:
+        for j in range(0,c.r.randint(1,10)):
+            wizyta_temp = c.Wizyta(i,t_1,t_2, t.Lekarze, t.Leki)
+            t.Wizyty.append(wizyta_temp)
+    for wiz in t.Wizyty:
+        if wiz.reklamacja is not None:
+            t.Reklamacje.append(wiz.reklamacja)
+        t.Diagnozy.append(wiz.diagnoza)
+
+    for diag in t.Diagnozy:
+        if diag.skierowanie is not None:
+            t.Skierowania.append(diag.skierowanie)
+
+    for skier in t.Skierowania:
+        for zab in skier.zabiegi:
+            t.Skierowanianazabiegi.append(zab)
+            for zabb in zab.zabiegi:
+                t.Zabiegi.append(zabb)
+    return t
 
 
 
@@ -111,4 +156,16 @@ def first_point_in_time():
 
 
 
-first_point_in_time()
+first_point_in_time(things1)
+things1.toSQL()
+print("dfgdsfg")
+#things2 = things1
+things1.filename = "insert2.sql"
+next_point_in_time(things1,T_2,T_3,10,10,5)
+print("dfgdsgf")
+things1.toSQL()
+#things3 = things2
+things1.filename = "insert3.sql"
+next_point_in_time(things1,T_3,T_4,10,10,5)
+print("fdgdfg")
+things1.toSQL()

@@ -47,7 +47,7 @@ def generate_date(begin=date(2016,6,30), end=date.today()) -> date:
     return date.fromordinal(r.randint(begin.toordinal(), end.toordinal()))
 
 def generate_reklamacja_tresc():
-    return "W dniu takim i takim byłem lub byłam z wizytą u lekarza i było to dla mnie barzdo niemiłe zaskoczenie. Składam reklamację."
+    return "W dniu takim i takim byłem lub byłam z wizytą u lekarza i było to dla mnie bardzo niemiłe zaskoczenie. Składam reklamację."
 
 def generate_skierowanie_tresc():
     return "Niezwłocznie kieruję pana/panią na dużą ilośc zabiegów."

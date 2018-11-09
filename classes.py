@@ -9,11 +9,11 @@ class Lekarz:
         self.nazwisko = g.generate_last_name()
         self.data_urodzenia = g.generate_date(d.date(1950, 1, 1), d.date(1970, 12, 31))
         self.data_przyjecia = g.generate_date(time_1 - d.timedelta(days=365), time_1)
-        self.PESEL = g.generate_pesel(self.data_urodzenia)
+        self.pesel = g.generate_pesel(self.data_urodzenia)
         self.specjalizacja = g.generate_specjalizacja() if specj == None else specj
     def toSQL(self):
-        return 'insert into Lekarze (imie, nazwisko, data_urodzenia, pesel, specjalizacja) values "' + \
-                '","' + self.imie + '","' + self.nazwisko + str(self.data_urodzenia) +'","' + self.pesel + '","' + self.specjalizacja + '";'
+        return 'insert into Lekarze (imie, nazwisko, data_urodzenia, pesel, specjalizacja) values ("' + \
+                '","' + self.imie + '","' + self.nazwisko + str(self.data_urodzenia) +'","' + self.pesel + '","' + self.specjalizacja + '");'
 
 
 class Pacjent:
@@ -26,8 +26,8 @@ class Pacjent:
         self.pesel = g.generate_pesel(self.data_urodzenia)
 
     def toSQL(self):
-        return 'insert into Pacjenci (imie, nazwisko, data_urodzenia, data_przyjecia, plec, pesel) values "' + \
-               self.imie +'","' + self.nazwisko +'","' + str(self.data_urodzenia) + '","' + str(self.data_przyjecia) + '","' + self.plec + '","' + self.pesel + '";'
+        return 'insert into Pacjenci (imie, nazwisko, data_urodzenia, data_przyjecia, plec, pesel) values ("' + \
+               self.imie +'","' + self.nazwisko +'","' + str(self.data_urodzenia) + '","' + str(self.data_przyjecia) + '","' + self.plec + '","' + self.pesel + '");'
 
 
 class Wizyta:
@@ -51,9 +51,9 @@ class Wizyta:
         self.pacjent = pacjent
 
     def toSQL(self):
-            return 'insert into Wizyty (id, data, czy_sie_stawil, czy_wyleczony, koszt, ocena, pacjent, reklamacja, diagnoza) values "' + str(self.id) + '","' +\
+            return 'insert into Wizyty (id, data, czy_sie_stawil, czy_wyleczony, koszt, ocena, pacjent, reklamacja, diagnoza) values ("' + str(self.id) + '","' +\
                    str(self.data) + '","' + str(self.czy_sie_stawil) + '","' + str(self.czy_wyleczony) + '","' + str(self.koszt) + '","' + str(self.ocena) + '","' + \
-                str(self.pacjent.pesel) + '","' + str(self.diagnoza.id) + '","' + ('' if self.reklamacja is None else str(self.reklamacja.id)) + '";'
+                str(self.pacjent.pesel) + '","' + str(self.diagnoza.id) + '","' + ('' if self.reklamacja is None else str(self.reklamacja.id)) + '");'
 
 
 class Reklamacja:
@@ -71,8 +71,8 @@ class Reklamacja:
         #self.data_reklamacji = Wizyta
 
     def toSQL(self):
-        return 'insert into Reklamacje (id, tresc, czy_uznano, wizyta, data_reklamacji) values "' + \
-               str(self.id) + '","' + self.tresc + '","' + str(self.czy_uznano) + '","' + str(self.wizyta.id) + '","' + str(self.data_reklamacji) + '";'
+        return 'insert into Reklamacje (id, tresc, czy_uznano, wizyta, data_reklamacji) values ("' + \
+               str(self.id) + '","' + self.tresc + '","' + str(self.czy_uznano) + '","' + str(self.wizyta.id) + '","' + str(self.data_reklamacji) + '");'
 
 
 class Diagnoza:
@@ -87,12 +87,8 @@ class Diagnoza:
         self.skierowanie = Skierowanie(self)
         pass
     def toSQL(self):
-        return 'insert into Diagnozy (id, choroba, lekarz, skierowanie) values "' + \
-               str(self.id) + '","' + self.choroba + '","' + self.czy_wyleczony + '","' + self.koszt + '","' + self.ocena + '","' + \
-               self.pacjent.pesel + '","' + self.diagnoza.id + '","' + self.reklamacja.id + '","'+ self.skierowanie.id+ '";'
-
-
-
+        return 'insert into Diagnozy (id, choroba, lekarz, skierowanie) values ("' + \
+               str(self.id) + '","' + self.choroba + '","' + str(self.lekarz.pesel) + '","' + str(self.skierowanie.id) + '");'
 
 
 class Lek:
@@ -108,8 +104,8 @@ class Lek:
         self.choroba = g.generate_illness()
 
     def toSQL(self):
-        return 'insert into Leki (id, producent, nazwa, dawkowanie) values "' + \
-               str(self.id) + '","' + self.producent + '","' + self.nazwa + '","' + self.dawkowanie + '";'
+        return 'insert into Leki (id, producent, nazwa, dawkowanie) values ("' + \
+               str(self.id) + '","' + self.producent + '","' + self.nazwa + '","' + self.dawkowanie + '");'
 
 
 class Skierowanie:
@@ -123,8 +119,8 @@ class Skierowanie:
         for i in range(2,5):
             self.zabiegi.append(Skierowanie_na_zabieg(self, diagnoza.wizyta))
     def toSQL(self):
-        return 'insert into Skierowania (id, tresc, diagnoza) values "' + \
-               str(self.id) + '","' + self.tresc + '","' + self.diagnoza.id + '";'
+        return 'insert into Skierowania (id, tresc, diagnoza) values ("' + \
+               str(self.id) + '","' + self.tresc + '","' + self.diagnoza.id + '");'
 
 class Skierowanie_na_zabieg:
     n = 0
@@ -138,8 +134,8 @@ class Skierowanie_na_zabieg:
         for i in range(self.liczba_zabiegow):
             self.zabiegi.append(Zabieg(wizyta,self))
     def toSQL(self):
-        return 'insert into Skierowania_na_zabieg (id, liczba_zabiegow, sprzet, skierowanie) values "' + \
-               str(self.id) + '","' + self.liczba_zabiegow + '","' + self.sprzet.id + '","' + self.skierowanie.id + '";'
+        return 'insert into Skierowania_na_zabieg (id, liczba_zabiegow, sprzet, skierowanie) values ("' + \
+               str(self.id) + '","' + str(self.liczba_zabiegow) + '","' + str(self.sprzet.id) + '","' + str(self.skierowanie.id) + '");'
 
 class Sprzet:
     n = 0
@@ -149,8 +145,8 @@ class Sprzet:
         self.nazwa = g.generate_sprzet_name()
         self.typ = g.generate_specjalizacja()
     def toSQL(self):
-        return 'insert into Sprzety (id, nazwa, typ) values "' + \
-               str(self.id) + '","' + self.nazwa + '","' + self.typ + '";'
+        return 'insert into Sprzety (id, nazwa, typ) values ("' + \
+               str(self.id) + '","' + self.nazwa + '","' + self.typ + '");'
 
 
 class Zabieg:
@@ -159,5 +155,5 @@ class Zabieg:
         self.rezultat = "ok" if r.randint(0,300) != 5 else "nie powiódł się"
         self.skierowanie_na_zabieg = skierowanie_na_zabieg.skierowanie
     def toSQL(self):
-        return 'insert into Zabiegi (data_wykonania, rezultat, skierowanie_na_zabieg) values "' + \
-               str(self.data_wykonania) + '","' + self.rezultat + '","' + str(self.skierowanie_na_zabieg.id) + '";'
+        return 'insert into Zabiegi (data_wykonania, rezultat, skierowanie_na_zabieg) values ("' + \
+               str(self.data_wykonania) + '","' + self.rezultat + '","' + str(self.skierowanie_na_zabieg.id) + '");'
