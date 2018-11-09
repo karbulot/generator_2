@@ -40,8 +40,6 @@ class Things:
         self.file_object.close()
 
 things1 = Things("insert1.sql")
-#things2 = Things("insert2.sql")
-#things3 = Things("insert3.sql")
 
 """
 Pacjenci2 = []
@@ -146,14 +144,6 @@ def next_point_in_time(t: Things,t_1,t_2,n_new_doctors, n_new_patients, n_patien
             for zabb in zab.zabiegi:
                 t.Zabiegi.append(zabb)
     return t
-
-
-
-
-
-
-
-
 
 
 first_point_in_time(things1)

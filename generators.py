@@ -75,6 +75,16 @@ def choose_doctor(lekarze: list, choroba):
     for l in lekarze:
         if l.specjalizacja == choroby[choroba]:
             return l
+    else:
+        return r.choice(lekarze)
+
+def choose_doctor2(lekarze: list, specj):
+    r.shuffle(lekarze)
+    for l in lekarze:
+        if l.specjalizacja == specj:
+            return l
+    else:
+        return r.choice(lekarze)
 
 def choose_lek(leki: list, choroba):
     r.shuffle(leki)

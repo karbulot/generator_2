@@ -84,7 +84,7 @@ class Diagnoza:
         self.lekarz: Lekarz = g.choose_doctor(lekarze, self.choroba)
         self.lek: Lek = g.choose_lek(leki, self.choroba)
         self.wizyta = wizyta
-        self.skierowanie = Skierowanie(self)
+        self.skierowanie = Skierowanie(self, lekarze)
         pass
     def toSQL(self):
         return 'insert into Diagnozy (id, choroba, lekarz, skierowanie) values ("' + \
@@ -110,21 +110,21 @@ class Lek:
 
 class Skierowanie:
     n = 0
-    def __init__(self, diagnoza: Diagnoza):
+    def __init__(self, diagnoza: Diagnoza, lekarze):
         self.id = Skierowanie.n
         Skierowanie.n +=1
         self.tresc = g.generate_skierowanie_tresc()
         self.zabiegi = []
         self.diagnoza = diagnoza
         for i in range(2,5):
-            self.zabiegi.append(Skierowanie_na_zabieg(self, diagnoza.wizyta))
+            self.zabiegi.append(Skierowanie_na_zabieg(self, diagnoza.wizyta, lekarze))
     def toSQL(self):
         return 'insert into Skierowania (id, tresc, diagnoza) values ("' + \
                str(self.id) + '","' + self.tresc + '","' + self.diagnoza.id + '");'
 
 class Skierowanie_na_zabieg:
     n = 0
-    def __init__(self, skierowanie: Skierowanie, wizyta: Wizyta):
+    def __init__(self, skierowanie: Skierowanie, wizyta: Wizyta, lekarze):
         self.id = Skierowanie_na_zabieg.n
         Skierowanie_na_zabieg.n += 1
         self.liczba_zabiegow = r.randint(1,8)
@@ -132,7 +132,7 @@ class Skierowanie_na_zabieg:
         self.skierowanie = skierowanie
         self.zabiegi = []
         for i in range(self.liczba_zabiegow):
-            self.zabiegi.append(Zabieg(wizyta,self))
+            self.zabiegi.append(Zabieg(wizyta,self, lekarze))
     def toSQL(self):
         return 'insert into Skierowania_na_zabieg (id, liczba_zabiegow, sprzet, skierowanie) values ("' + \
                str(self.id) + '","' + str(self.liczba_zabiegow) + '","' + str(self.sprzet.id) + '","' + str(self.skierowanie.id) + '");'
@@ -150,10 +150,11 @@ class Sprzet:
 
 
 class Zabieg:
-    def __init__(self, wizyta: Wizyta, skierowanie_na_zabieg: Skierowanie_na_zabieg):
+    def __init__(self, wizyta: Wizyta, skierowanie_na_zabieg: Skierowanie_na_zabieg, lekarze):
         self.data_wykonania = g.generate_date(wizyta.data,wizyta.data + d.timedelta(days=30))
         self.rezultat = "ok" if r.randint(0,300) != 5 else "nie powiódł się"
         self.skierowanie_na_zabieg = skierowanie_na_zabieg.skierowanie
+        self.lekarz = g.choose_doctor2(lekarze,skierowanie_na_zabieg.sprzet.typ)
     def toSQL(self):
         return 'insert into Zabiegi (data_wykonania, rezultat, skierowanie_na_zabieg) values ("' + \
-               str(self.data_wykonania) + '","' + self.rezultat + '","' + str(self.skierowanie_na_zabieg.id) + '");'
+               str(self.data_wykonania) + '","' + self.rezultat + '","' + str(self.skierowanie_na_zabieg.id) + '","' + str(self.lekarz.pesel) + '");'
