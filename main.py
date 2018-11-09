@@ -2,9 +2,11 @@ import classes as c
 import datetime as d
 
 
-N_PACJENT = 20
+N_PACJENT = 30
 N_LEKARZ = 10
-N_LEK = 5
+N_LEK = 25
+N_SPRZET = 25
+
 
 T_1 = d.date(2016,1,1)
 T_2 = d.date(2017,1,1)
@@ -65,11 +67,14 @@ def first_point_in_time():
     Lekarze.append(c.Lekarz(T_1,"Okulista"))
     Lekarze.append(c.Lekarz(T_1,"Neurolog"))
     Lekarze.append(c.Lekarz(T_1,"Onkolog"))
-    #Pacjenci, Wizyty, Reklamacje, Diagnozy
 
+    #leki, sprzęty
     for i in range(N_LEK):
         Leki.append(c.Lek())
+    for i in range(N_SPRZET):
+        Sprzety.append(c.Sprzet())
 
+    # Pacjenci, Wizyty, Reklamacje, Diagnozy, Skierowania, Skierowania na Zabieg, Zabiegi
     for i in range(N_PACJENT):
         Pacjenci.append(c.Pacjent(T_1, T_2))
     for i in Pacjenci:
@@ -82,6 +87,18 @@ def first_point_in_time():
             if wiz.reklamacja is not None:
                 Reklamacje.append(wiz.reklamacja)
             Diagnozy.append(wiz.diagnoza)
+
+        for diag in Diagnozy:
+            if diag.skierowanie is not None:
+                Skierowania.append(diag.skierowanie)
+
+        for skier in Skierowania:
+            for zab in skier.zabiegi:
+                Skierowanianazabiegi.append(zab)
+                for zabb in zab.zabiegi:
+                    Zabiegi.append(zabb)
+
+
 
 
 

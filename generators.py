@@ -67,6 +67,9 @@ def generate_medicine_name():
 def generate_dawkowanie():
     return str(r.randint(1,4)) + " razy dziennie przez " + str(r.randint(2,4)) + " tygodnie "
 
+def generate_sprzet_type():
+    pass
+
 def choose_doctor(lekarze: list, choroba):
     r.shuffle(lekarze)
     for l in lekarze:
