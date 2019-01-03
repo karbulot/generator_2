@@ -62,7 +62,7 @@ class Wizyta:
         self.godzina = g.generate_hour()
         self.skierowanie = Skierowanie(self.diagnoza, lekarze)
         self.numer_wizyty = g.gen_numerwizyty()
-        self.recepta: Recepta = Recepta()
+        self.recepta: Recepta = Recepta(pacjent)
 
 
     def addPacjent(self, pacjent: Pacjent):
