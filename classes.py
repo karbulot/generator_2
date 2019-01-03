@@ -154,6 +154,7 @@ class Skierowanie_na_zabieg:
         self.sprzet = Sprzet()
         self.skierowanie = skierowanie
         self.zabiegi = []
+        self.wizyta = wizyta
         for i in range(self.liczba_zabiegow):
             self.zabiegi.append(Zabieg(wizyta,self, lekarze))
     def toSQL(self):
@@ -186,6 +187,7 @@ class Zabieg:
         self.stan_przytomnosci =r.randint(0,2)
         self.kolor_skory = r.randint(0,2)
         self.sprzet = skierowanie_na_zabieg.sprzet.id
+        self.pacjent = skierowanie_na_zabieg.wizyta.pacjent
 
     def toSQL(self):
         return 'insert into Zabiegi (data_wykonania, lekarz_wykonujacy, lekarz_zlecajacy, pacjent, sprzet, ' \
@@ -214,7 +216,7 @@ class Godzina:
     def toSQL(self):
          return 'insert into Godziny(id, godzina, minuta) values ("' + \
                str(self.id) + '","' \
-               + self.godzina + '","' \
+               + str(self.godzina) + '","' \
                + str(self.minuta) + '","' \
                '");'
 

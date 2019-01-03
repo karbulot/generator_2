@@ -17,10 +17,11 @@ class Things:
     def __init__(self,filename):
         self.Pacjenci = []
         self.Wizyty = []
+        self.Dawkowania = []
         self.Reklamacje = []
         self.Lekarze = []
         self.Diagnozy = []
-        self.Leki = []
+        self.Recepty = []
         self.Skierowania = []
         self.Sprzety = []
         self.Skierowanianazabiegi = []
@@ -30,7 +31,10 @@ class Things:
         self.file_object = open(filename, "w")
 
     def iter(self):
-        return [self.Pacjenci, self.Wizyty, self.Reklamacje, self.Diagnozy, self.Leki, self.Sprzety, self.Skierowanianazabiegi, self.Zabiegi]
+        return [self.Pacjenci, self.Wizyty, self.Reklamacje, self.Diagnozy, self.Recepty, self.Sprzety, self.Godziny,
+                self.Skierowania,
+                #self.Skierowanianazabiegi,
+                self.Zabiegi, self.Dawkowania]
 
     def toSQL(self):
         self.file_object = open(self.filename, "w")
@@ -107,23 +111,20 @@ def first_point_in_time(t: Things):
     for i in t.Pacjenci:
         #print(i.toSQL())
         for j in range(0,c.r.randint(1,10)):
-            wizyta_temp = c.Wizyta(i,T_1,T_2, t.Lekarze, t.Leki)
+            wizyta_temp = c.Wizyta(i,T_1,T_2, t.Lekarze, t.Recepty)
             t.Wizyty.append(wizyta_temp)
             #print(wizyta_temp.toSQL())
     for wiz in t.Wizyty:
         if wiz.reklamacja is not None:
             t.Reklamacje.append(wiz.reklamacja)
         t.Diagnozy.append(wiz.diagnoza)
-
-    #for diag in t.Diagnozy:
-    #    if diag.skierowanie is not None:
-    #       t.Skierowania.append(diag.skierowanie)
-
+        t.Recepty.append(wiz.recepta)
+        t.Skierowania.append(wiz.skierowanie)
 
 
     for skier in t.Skierowania:
         for zab in skier.zabiegi:
-            t.Skierowanianazabiegi.append(zab)
+            #t.Skierowanianazabiegi.append(zab)
             for zabb in zab.zabiegi:
                 t.Zabiegi.append(zabb)
 
@@ -139,7 +140,7 @@ def next_point_in_time(t: Things,t_1,t_2,n_new_doctors, n_new_patients, n_patien
         t.Pacjenci.append(c.Pacjent(t_1, t_2))
     for i in t.Pacjenci:
         for j in range(0,c.r.randint(1,10)):
-            wizyta_temp = c.Wizyta(i,t_1,t_2, t.Lekarze, t.Leki)
+            wizyta_temp = c.Wizyta(i,t_1,t_2, t.Lekarze, t.Recepty)
             t.Wizyty.append(wizyta_temp)
     for wiz in t.Wizyty:
         if wiz.reklamacja is not None:
