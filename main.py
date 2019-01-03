@@ -25,6 +25,7 @@ class Things:
         self.Sprzety = []
         self.Skierowanianazabiegi = []
         self.Zabiegi = []
+        self.Godziny = []
         self.filename = filename
         self.file_object = open(filename, "w")
 
@@ -71,23 +72,32 @@ Zabiegi3 = []
 def generate_doctors(doctors, n: int):
 
     for i in range (n):
-        doctors.append(c.Lekarz(T_1, None))
+        doctors.append(c.Lekarz(T_1, None, doctors))
+
+def generate_hours(godziny: list):
+    for i in range(24):
+        for j in range(60):
+            godziny.append(c.Godzina(j,i))
+
+#def generate_dates(daty: list, rok):
+#    for i in range()
 
 def first_point_in_time(t: Things):
     #Lekarze:
+    generate_hours(t.Godziny)
     generate_doctors(t.Lekarze,N_LEKARZ)
 
-    t.Lekarze.append(c.Lekarz(T_1,"Kardiolog"))
-    t.Lekarze.append(c.Lekarz(T_1,"Psychiatra"))
-    t.Lekarze.append(c.Lekarz(T_1,"Laryngolog"))
-    t.Lekarze.append(c.Lekarz(T_1,"Anestezjolog"))
-    t.Lekarze.append(c.Lekarz(T_1,"Okulista"))
-    t.Lekarze.append(c.Lekarz(T_1,"Neurolog"))
-    t.Lekarze.append(c.Lekarz(T_1,"Onkolog"))
+    t.Lekarze.append(c.Lekarz(T_1,"Kardiolog", t.Lekarze))
+    t.Lekarze.append(c.Lekarz(T_1,"Psychiatra", t.Lekarze))
+    t.Lekarze.append(c.Lekarz(T_1,"Laryngolog", t.Lekarze))
+    t.Lekarze.append(c.Lekarz(T_1,"Anestezjolog", t.Lekarze))
+    t.Lekarze.append(c.Lekarz(T_1,"Okulista", t.Lekarze))
+    t.Lekarze.append(c.Lekarz(T_1,"Neurolog", t.Lekarze))
+    t.Lekarze.append(c.Lekarz(T_1,"Onkolog", t.Lekarze))
 
     #leki, sprzęty
-    for i in range(N_LEK):
-        t.Leki.append(c.Lek())
+    #for i in range(N_LEK):
+    #    t.Leki.append(c.Recepta())
     for i in range(N_SPRZET):
         t.Sprzety.append(c.Sprzet())
 
@@ -105,9 +115,11 @@ def first_point_in_time(t: Things):
             t.Reklamacje.append(wiz.reklamacja)
         t.Diagnozy.append(wiz.diagnoza)
 
-    for diag in t.Diagnozy:
-        if diag.skierowanie is not None:
-           t.Skierowania.append(diag.skierowanie)
+    #for diag in t.Diagnozy:
+    #    if diag.skierowanie is not None:
+    #       t.Skierowania.append(diag.skierowanie)
+
+
 
     for skier in t.Skierowania:
         for zab in skier.zabiegi:
@@ -134,9 +146,9 @@ def next_point_in_time(t: Things,t_1,t_2,n_new_doctors, n_new_patients, n_patien
             t.Reklamacje.append(wiz.reklamacja)
         t.Diagnozy.append(wiz.diagnoza)
 
-    for diag in t.Diagnozy:
-        if diag.skierowanie is not None:
-            t.Skierowania.append(diag.skierowanie)
+#    for diag in t.Diagnozy:
+#        if diag.skierowanie is not None:
+#            t.Skierowania.append(diag.skierowanie)
 
     for skier in t.Skierowania:
         for zab in skier.zabiegi:

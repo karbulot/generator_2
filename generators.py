@@ -3,6 +3,7 @@ from datetime import timedelta
 from datetime import date
 
 PESELS = []
+numery_wizyt = []
 
 choroby = {
     "Choroba Gravesa-Basedowa" : "Kardiolog",
@@ -86,6 +87,18 @@ def choose_doctor2(lekarze: list, specj):
     else:
         return r.choice(lekarze)
 
+def choose_doctor3(lekarze:list, stanowisko:int):
+    if stanowisko==3:
+        return None
+    if not lekarze:
+        return None
+    r.shuffle(lekarze)
+    for l in lekarze:
+        if l.stanowisko > stanowisko:
+            return l
+    else:
+        return r.choice(lekarze)
+
 def choose_lek(leki: list, choroba):
     r.shuffle(leki)
     for l in leki:
@@ -93,3 +106,20 @@ def choose_lek(leki: list, choroba):
             return l
     else:
         return r.choice(leki)
+
+def gen_state():
+    return r.randint(0,2)
+
+def get_stanowisko(x: int):
+    if x == 3:
+        return  "Ordynator"
+    if x == 2:
+        return "Opiekun"
+    if x == 1:
+        return "Lekarz"
+
+def generate_hour():
+    return str(r.randint(7,19)) + " " + r.choice(["00","15","30","45"])
+
+def gen_numerwizyty():
+    return r.choice(["A","B","C","D"])+str(r.randint(11111,999999))
