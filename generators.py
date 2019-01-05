@@ -48,7 +48,7 @@ def generate_date(begin=date(2016,6,30), end=date.today()) -> date:
     return date.fromordinal(r.randint(begin.toordinal(), end.toordinal()))
 
 def generate_reklamacja_tresc():
-    return "W dniu takim i takim byłem lub byłam z wizytą u lekarza i było to dla mnie bardzo niemiłe zaskoczenie. Składam reklamację."
+    return "W dniu takim i takim bylem lub bylam z wizytą u lekarza i było to dla mnie bardzo niemiłe zaskoczenie. Składam reklamacje."
 
 def generate_skierowanie_tresc():
     return "Niezwłocznie kieruję pana/panią na dużą ilośc zabiegów."
@@ -97,7 +97,7 @@ def choose_doctor3(lekarze:list, stanowisko:int):
         if l.stanowisko > stanowisko:
             return l
     else:
-        return r.choice(lekarze)
+        return None
 
 def choose_lek(leki: list, choroba):
     r.shuffle(leki)
@@ -106,6 +106,12 @@ def choose_lek(leki: list, choroba):
             return l
     else:
         return r.choice(leki)
+
+def choose_sprzet(sprzety: list, specj):
+    for s in sprzety:
+        if s.typ == specj:
+            return s
+    return r.choice(sprzety)
 
 def gen_state():
     return r.randint(0,2)
@@ -119,7 +125,7 @@ def get_stanowisko(x: int):
         return "Lekarz"
 
 def generate_hour():
-    return str(r.randint(7,19)) + " " + r.choice(["00","15","30","45"])
+    return str(r.randint(7,19)) + ":" + r.choice(["00","15","30","45"])
 
 def gen_numerwizyty():
     return r.choice(["A","B","C","D"])+str(r.randint(11111,999999))

@@ -5,7 +5,7 @@ import datetime as d
 N_PACJENT = 30
 N_LEKARZ = 10
 N_LEK = 25
-N_SPRZET = 25
+N_SPRZET = 50
 
 
 T_1 = d.date(2016,1,1)
@@ -31,12 +31,13 @@ class Things:
         self.file_object = open(filename, "w")
 
     def iter(self):
-        return [self.Pacjenci, self.Wizyty, self.Reklamacje, self.Diagnozy, self.Recepty, self.Sprzety, self.Godziny,
+        return [self.Pacjenci, self.Lekarze, self.Reklamacje, self.Diagnozy, self.Recepty, self.Sprzety, self.Godziny,
                 self.Skierowania,
                 #self.Skierowanianazabiegi,
-                self.Zabiegi, self.Dawkowania]
+                self.Zabiegi, self.Dawkowania, self.Wizyty]
 
     def toSQL(self):
+        self.Lekarze.sort(key=lambda x: x.id)
         self.file_object = open(self.filename, "w")
         for i in self.iter():
             for element in i:
@@ -98,7 +99,7 @@ def first_point_in_time(t: Things):
     t.Lekarze.append(c.Lekarz(T_1,"Okulista", t.Lekarze))
     t.Lekarze.append(c.Lekarz(T_1,"Neurolog", t.Lekarze))
     t.Lekarze.append(c.Lekarz(T_1,"Onkolog", t.Lekarze))
-
+    t.Lekarze.sort(key=lambda x: x.id)
     #leki, sprzęty
     #for i in range(N_LEK):
     #    t.Leki.append(c.Recepta())
@@ -111,7 +112,7 @@ def first_point_in_time(t: Things):
     for i in t.Pacjenci:
         #print(i.toSQL())
         for j in range(0,c.r.randint(1,10)):
-            wizyta_temp = c.Wizyta(i,T_1,T_2, t.Lekarze, t.Recepty)
+            wizyta_temp = c.Wizyta(i,T_1,T_2, t.Lekarze, t.Recepty, t.Sprzety)
             t.Wizyty.append(wizyta_temp)
             #print(wizyta_temp.toSQL())
     for wiz in t.Wizyty:
@@ -140,7 +141,7 @@ def next_point_in_time(t: Things,t_1,t_2,n_new_doctors, n_new_patients, n_patien
         t.Pacjenci.append(c.Pacjent(t_1, t_2))
     for i in t.Pacjenci:
         for j in range(0,c.r.randint(1,10)):
-            wizyta_temp = c.Wizyta(i,t_1,t_2, t.Lekarze, t.Recepty)
+            wizyta_temp = c.Wizyta(i,t_1,t_2, t.Lekarze, t.Recepty, t.Sprzety)
             t.Wizyty.append(wizyta_temp)
     for wiz in t.Wizyty:
         if wiz.reklamacja is not None:
@@ -156,6 +157,7 @@ def next_point_in_time(t: Things,t_1,t_2,n_new_doctors, n_new_patients, n_patien
             t.Skierowanianazabiegi.append(zab)
             for zabb in zab.zabiegi:
                 t.Zabiegi.append(zabb)
+
     return t
 
 
