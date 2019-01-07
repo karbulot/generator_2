@@ -224,20 +224,22 @@ class Godzina:
 
 class Data:
     n=0
-    def __init__(self, dzien, miesiac, rok):
+    def __init__(self, date: d.date):
         self.id: int = Data.n
         Data.n += 1
-        self.dzien: str = dzien
-        self.miesiac: str = miesiac
-        self.rok: str = rok
+        self.dzien: str = date.day
+        self.miesiac: str = date.month
+        self.rok: str = date.year
+        self.dzien_tyg: str = date.isoweekday()
+        self.swieto: str = g.check_swieto(date)
 
-    def toSQL(self):
-        return "insert into Daty(id, rok, miesiac, dzien) values ('" + \
+    def toSQL(self) -> str:
+        return "insert into Daty(id, rok, miesiac, dzien, dzien_tygodnia, swieto) values ('" + \
                str(self.id) + "','" \
-               + self.rok + "','" \
+               + str(self.rok) + "','" \
                + str(self.miesiac) + "','" \
-               + self.dzien + \
-               "');"
+               + str(self.dzien) + "','" \
+               + str(self.dzien_tyg) + "','" + self.swieto + "');"
 
 class Dawkowanie:
     def __init__(self, recepta: Recepta, pacjent: Pacjent):
@@ -250,10 +252,10 @@ class Dawkowanie:
         self.recepta = recepta
 
     def toSQL(self):
-        return "insert into Dawkowania(pacjent, recepta, ile_razy_dziennie, dawka, nr_recepty, liczba_dni) values ('" + \
+        return "insert into Dawkowania(pacjent, recepta, ile_razy_dziennie, dawka, numer_recepty, liczba_dni) values ('" + \
                str(self.pacjent.id) + "','" \
                + str(self.recepta.id) + "','" \
                + str(self.ile) + "','" \
                + str(self.dawka) + "','" \
                + str(self.numer_recepty) + "','" \
-                + str(self.liczba_dni) + "');'"
+                + str(self.liczba_dni) + "');"

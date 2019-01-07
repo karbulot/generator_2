@@ -44,7 +44,7 @@ def generate_first_name():
 def generate_last_name():
     return (r.choice(list(open('Nazwisko.txt'))))[:-1]
 
-def generate_date(begin=date(2016,6,30), end=date.today()) -> date:
+def generate_date(begin: date=date(2016,6,30), end: date=date.today()) -> date:
     return date.fromordinal(r.randint(begin.toordinal(), end.toordinal()))
 
 def generate_reklamacja_tresc():
@@ -128,4 +128,26 @@ def generate_hour():
     return str(r.randint(7,19)) + ":" + r.choice(["00","15","30","45"])
 
 def gen_numerwizyty():
-    return r.choice(["A","B","C","D"])+str(r.randint(11111,999999))
+    return r.randint(1111111,99999999)
+
+def check_swieto(data: date) -> str:
+    if data.month == 11 and data.day == 11:
+        return "true"
+    elif data.month == 12 and data.day == 25:
+        return "true"
+    elif data.month == 12 and data.day == 26:
+        return "true"
+    elif data.month == 12 and data.day == 31:
+        return "true"
+    elif data.month == 1 and data.day == 1:
+        return "true"
+    elif data.month == 1 and data.day == 6:
+        return "true"
+    elif data.month == 1 and data.day == 1:
+        return "true"
+    elif data.month == 5 and data.day == 1:
+        return "true"
+    elif data.month == 5 and data.day == 3:
+        return "true"
+    else:
+        return "false"

@@ -27,12 +27,13 @@ class Things:
         self.Skierowanianazabiegi = []
         self.Zabiegi = []
         self.Godziny = []
+        self.Daty = []
         self.filename = filename
         self.file_object = open(filename, "w")
 
     def iter(self):
         return [self.Pacjenci, self.Lekarze, self.Reklamacje, self.Diagnozy, self.Recepty, self.Sprzety, self.Godziny,
-                self.Skierowania,
+                self.Daty, self.Skierowania,
                 #self.Skierowanianazabiegi,
                 self.Zabiegi, self.Dawkowania, self.Wizyty]
 
@@ -83,6 +84,12 @@ def generate_hours(godziny: list):
     for i in range(24):
         for j in range(60):
             godziny.append(c.Godzina(j,i))
+    return godziny
+
+def generate_dates(daty: list, t_1, t_2):
+    for j in [d.date.fromordinal(i) for i in range(t_1.toordinal(),t_2.toordinal())]:
+        daty.append(c.Data(j))
+    return daty
 
 #def generate_dates(daty: list, rok):
 #    for i in range()
@@ -90,6 +97,7 @@ def generate_hours(godziny: list):
 def first_point_in_time(t: Things):
     #Lekarze:
     generate_hours(t.Godziny)
+    generate_dates(t.Daty, T_1, T_2)
     generate_doctors(t.Lekarze,N_LEKARZ)
 
     t.Lekarze.append(c.Lekarz(T_1,"Kardiolog", t.Lekarze))
@@ -129,34 +137,51 @@ def first_point_in_time(t: Things):
             for zabb in zab.zabiegi:
                 t.Zabiegi.append(zabb)
 
+    for rec in t.Recepty:
+        t.Dawkowania.append(rec.dawkowanie)
+
 
 #things2 = things1
 
 
 def next_point_in_time(t: Things,t_1,t_2,n_new_doctors, n_new_patients, n_patients_left):
+    #date_range = [d.date.fromordinal(i) for i in range(t_1.toordinal(),t_2.toordinal())]
+    generate_dates(t.Daty, t_1, t_2)
     c.r.shuffle(t.Pacjenci)
-    t.Pacjenci = t.Pacjenci[n_patients_left:]
+    #t.Pacjenci = t.Pacjenci[n_patients_left:]
     generate_doctors(t.Lekarze, n_new_doctors)
+    nowe_wizyty = []
+    nowi_pacjenci = []
+    nowe_recepty = []
     for i in range(n_new_patients):
-        t.Pacjenci.append(c.Pacjent(t_1, t_2))
-    for i in t.Pacjenci:
+        nowi_pacjenci.append(c.Pacjent(t_1, t_2))
+    for i in nowi_pacjenci:
         for j in range(0,c.r.randint(1,10)):
             wizyta_temp = c.Wizyta(i,t_1,t_2, t.Lekarze, t.Recepty, t.Sprzety)
-            t.Wizyty.append(wizyta_temp)
-    for wiz in t.Wizyty:
+            nowe_wizyty.append(wizyta_temp)
+    t.Pacjenci+=nowi_pacjenci
+    for i in range(N_SPRZET):
+        t.Sprzety.append(c.Sprzet())
+
+    # Pacjenci, Wizyty, Reklamacje, Diagnozy, Skierowania, Skierowania na Zabieg, Zabiegi
+    for wiz in nowe_wizyty:
         if wiz.reklamacja is not None:
             t.Reklamacje.append(wiz.reklamacja)
         t.Diagnozy.append(wiz.diagnoza)
-
-#    for diag in t.Diagnozy:
-#        if diag.skierowanie is not None:
-#            t.Skierowania.append(diag.skierowanie)
+        nowe_recepty.append(wiz.recepta)
+        t.Skierowania.append(wiz.skierowanie)
+    t.Wizyty+=nowe_wizyty
 
     for skier in t.Skierowania:
         for zab in skier.zabiegi:
-            t.Skierowanianazabiegi.append(zab)
             for zabb in zab.zabiegi:
                 t.Zabiegi.append(zabb)
+
+    for rec in nowe_recepty:
+        t.Dawkowania.append(rec.dawkowanie)
+
+    t.Recepty+=nowe_recepty
+
 
     return t
 
